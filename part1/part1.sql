@@ -10,16 +10,16 @@
 SELECT month_orders.order_class, count(month_orders.order_class) as order_cnt 
 FROM
 (
-	SELECT order_time, order_class
-	FROM procedure_order
-	WHERE
-	strftime('%m', order_time) IN ('08')
-	AND
-	strftime('%Y', order_time) IN ('2020')
-	AND 
-	order_class IS NOT NULL
-	AND 
-	LENGTH(order_class) > 0
+    SELECT order_time, order_class
+    FROM procedure_order
+    WHERE
+    strftime('%m', order_time) IN ('08')
+    AND
+    strftime('%Y', order_time) IN ('2020')
+    AND 
+    order_class IS NOT NULL
+    AND 
+    LENGTH(order_class) > 0
 ) AS month_orders
 GROUP BY month_orders.order_class 
 ORDER BY count(month_orders.order_class) DESC
@@ -44,17 +44,17 @@ procedure_month,
 procedure_year
 FROM
 (
-	SELECT 
-	pa.id as patient_id,
-	count(*) as patient_procedures,
-	strftime('%m', order_time) as procedure_month,
-	strftime('%Y', order_time) as procedure_year
-	FROM procedure_order as pr 
-	JOIN patient_data as pa 
-	ON pa.encounter_id = pr.encounter_id
-	WHERE 
-	JULIANDAY(pr.order_time) - JULIANDAY(pa.admit_time) <= 1.0
-	GROUP BY patient_id
+    SELECT 
+    pa.id as patient_id,
+    count(*) as patient_procedures,
+    strftime('%m', order_time) as procedure_month,
+    strftime('%Y', order_time) as procedure_year
+    FROM procedure_order as pr 
+    JOIN patient_data as pa 
+    ON pa.encounter_id = pr.encounter_id
+    WHERE 
+    JULIANDAY(pr.order_time) - JULIANDAY(pa.admit_time) <= 1.0
+    GROUP BY patient_id
 )
 GROUP BY procedure_month, procedure_year;
 -- 3. On average, how many orders were placed per patient within 24 hours of their
@@ -75,28 +75,28 @@ admition_week_cls,
 admition_year
 FROM
 (
-	SELECT 
-	pa.id as patient_id,
-	count(*) as patient_procedures,
-	strftime('%w', pa.admit_time) as admition_week_day,
-	strftime('%Y', pa.admit_time) as admition_year,
-	CASE strftime('%w', pa.admit_time) 
+    SELECT 
+    pa.id as patient_id,
+    count(*) as patient_procedures,
+    strftime('%w', pa.admit_time) as admition_week_day,
+    strftime('%Y', pa.admit_time) as admition_year,
+    CASE strftime('%w', pa.admit_time) 
         WHEN '0' THEN 'weekend'
         WHEN '6' THEN 'weekend' 
         ELSE 'weekday' 
     END admition_week_cls
-	FROM procedure_order as pr 
-	JOIN patient_data as pa 
-	ON pa.encounter_id = pr.encounter_id
-	WHERE 
-	JULIANDAY(pr.order_time) - JULIANDAY(pa.admit_time) <= 1.0
-	GROUP BY patient_id
+    FROM procedure_order as pr 
+    JOIN patient_data as pa 
+    ON pa.encounter_id = pr.encounter_id
+    WHERE 
+    JULIANDAY(pr.order_time) - JULIANDAY(pa.admit_time) <= 1.0
+    GROUP BY patient_id
 )
 GROUP BY admition_week_cls, admition_year;
 -- 4. How would you visualize the result in question 3? Who would you expect your
 -- audience to be? Why do you think it might be useful? You can either create a
 -- visualization or tell us how you want to visualize this data.
 
-The audience will be people from finance in hospital, personal that handle the required inventory for performing the procedures, HR personal that need to understand nurses or doctors capacity .
+-- The audience will be people from finance in hospital, personal that handle the required inventory for performing the procedures, HR personal that need to understand nurses or doctors capacity .
 
-I'll visualize this data as a bar-time series with a data table. The data table allow a drill down operation by procedure.
+-- I'll visualize this data as a bar-time series with a data table. The data table allow a drill down operation by procedure.
